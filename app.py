@@ -48,7 +48,15 @@ def get_output_video(filename):
 
 @app.route("/signal-status", methods=["GET"])
 def signal_status():
-    return jsonify(controller.get_status())
+    try:
+        return jsonify(controller.get_status())
+    except Exception as e:
+        print("❌ ERROR in /signal-status:", e)
+        return jsonify({
+            "error": "Signal controller failed",
+            "details": str(e)
+        }), 500
+
 
 # ---------------- EMERGENCY MONITORING ----------------
 
