@@ -228,5 +228,13 @@ class TrafficSignalController:
 
     # ... rest of the methods remain the same ...
 
+    def get_status(self):
+         """
+          Alias for backward compatibility with API.
+          Returns status of all junctions.
+         """
+         return self.get_all_junctions_status()
+
+
 # Global instance
 controller = TrafficSignalController()
