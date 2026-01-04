@@ -6,8 +6,6 @@
 ![Real-time](https://img.shields.io/badge/REAL--TIME-Traffic%20Control-blue?style=for-the-badge)
 ![Multi-Junction](https://img.shields.io/badge/MULTI--JUNCTION-Synchronization-red?style=for-the-badge)
 
-**🏆 Hackathon Winning Project | Intelligent Traffic Signal Prioritization for Emergency Response**
-
 *Reducing Emergency Response Time by 40% Through AI-Powered Traffic Management*
 
 </div>
@@ -250,17 +248,6 @@ Result: Optimal resource allocation
 - [ ] Cloud deployment
 - [ ] Mobile app for emergency services
 - [ ] Machine learning for traffic prediction
-
----
-
-## 👥 Team & Contribution
-
-| Role                   | Responsibilities                    | Contribution |
-|------------------------|-------------------------------------|--------------|
-| **Project Lead**       | System Architecture, AI Integration | 35%          |
-| **Frontend Developer** | UI/UX Design, React Implementation  | 25%          |
-| **Backend Developer**  | Flask API, Database Design          | 25%          |
-| **DevOps Engineer**    | Deployment, Documentation           | 15%          |
 
 ---
 
