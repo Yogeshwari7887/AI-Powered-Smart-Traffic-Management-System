@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Traffic - Emergency Vehicle Module</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #000306 0%, #030f23 100%); 
+            min-height: 100vh; 
+            color: #fff; 
+        }
+        .navbar { 
+            background: rgba(0, 0, 0, 0.3); 
+            padding: 1rem 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            backdrop-filter: blur(10px); 
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #05f786; }
+        .nav-links a { color: #fff; text-decoration: none; margin-left: 2rem; transition: color 0.3s; }
+        .nav-links a:hover { color: #00ff88; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+        .card { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px); 
+            border-radius: 20px; 
+            padding: 2rem; 
+            margin-bottom: 2rem; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); 
+        }
+        h1, h2 { margin-bottom: 1.5rem; color: #00ff88; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        input, select { 
+            width: 100%; 
+            padding: 0.8rem; 
+            border: 2px solid rgba(255, 255, 255, 0.2); 
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 10px; 
+            color: #fff; 
+            font-size: 1rem; 
+            transition: border-color 0.3s; 
+        }
+        input:focus, select:focus { outline: none; border-color: #00ff88; }
+        input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        .btn { 
+            background: #00ff88; 
+            color: #1e3c72; 
+            border: none; 
+            padding: 1rem 2rem; 
+            border-radius: 10px; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            width: 100%; 
+        }
+        .btn:hover { background: #00cc6e; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3); }
+        .btn-danger { background: #ff4444; color: #fff; }
+        .btn-danger:hover { background: #cc0000; box-shadow: 0 5px 20px rgba(255, 68, 68, 0.3); }
+        .emergency-active { background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 0.5rem; }
+        .status-active { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .status-inactive { background: #666; }
+        .camera-list { margin-top: 1rem; }
+        .camera-item { 
+            background: rgba(255, 255, 255, 0.05); 
+            padding: 1rem; 
+            border-radius: 10px; 
+            margin-bottom: 0.5rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .hidden { display: none; }
+        .alert { padding: 1rem; border-radius: 10px; margin-bottom: 1rem; }
+        .alert-success { background: rgba(0, 255, 136, 0.2); border: 1px solid #00ff88; }
+        .alert-error { background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444; }
+        .location-info { background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 10px; margin-top: 1rem; }
+        #map { 
+            border: 2px solid rgba(255,255,255,0.2); 
+            height: 350px; 
+            width: 100%; 
+            border-radius: 10px; 
+            margin-top: 10px; 
+            background: #1a1a1a; 
+        }
+        .map-instruction {
+            background: rgba(0, 255, 136, 0.15);
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            border-left: 3px solid #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🚑 AI Traffic Emergency</div>
+        <div class="nav-links">
+            <a href="#" onclick="showTab('login')">Home</a>
+            <a href="#" onclick="showTab('register')">Register</a>
+            <a href="#" id="logoutBtn" class="hidden" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection" class="card">
+            <h1>Emergency Vehicle Login</h1>
+            <div id="loginAlert"></div>
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <p style="margin-top: 1rem; text-align: center;">
+                Don't have an account? <a href="#" onclick="showTab('register')" style="color: #00ff88;">Register here</a>
+            </p>
+        </div>
+
+        <!-- Registration Section -->
+        <div id="registerSection" class="card hidden">
+            <h1>Register Emergency Vehicle</h1>
+            <div id="registerAlert"></div>
+            <form onsubmit="register(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="Choose username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Choose password" required>
+                </div>
+                <div class="form-group">
+                    <label>Vehicle Type</label>
+                    <select id="regVehicleType" required>
+                        <option value="">Select vehicle type</option>
+                        <option value="ambulance">Ambulance</option>
+                        <option value="fire_truck">Fire Truck</option>
+                        <option value="police">Police Vehicle</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Vehicle Number</label>
+                    <input type="text" id="regVehicleNumber" placeholder="e.g., MH12AB1234" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="Enter phone number" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+            <p style="margin-top: 1rem; text-align: center;">
+                Already have an account? <a href="#" onclick="showTab('login')" style="color: #00ff88;">Login here</a>
+            </p>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="card hidden">
+            <h1>Emergency Control Dashboard</h1>
+            <div id="dashboardAlert"></div>
+            
+            <div class="location-info">
+                <h3>Vehicle Information</h3>
+                <p><strong>Username:</strong> <span id="dashUsername"></span></p>
+                <p><strong>Vehicle:</strong> <span id="dashVehicleType"></span> - <span id="dashVehicleNumber"></span></p>
+                <p><strong>Status:</strong> <span class="status-indicator status-inactive" id="statusIndicator"></span><span id="dashStatus">Inactive</span></p>
+            </div>
+
+            <div id="emergencyForm">
+                <h2 style="margin-top: 2rem;">Enable Emergency Mode</h2>
+                <form onsubmit="enableEmergency(event)">
+                    <div class="form-group">
+                        <label>Source Location</label>
+                        <input type="text" id="sourceLocation" placeholder="Enter starting point" required>
+                        <button type="button" class="btn" onclick="getCurrentLocation()" style="margin-top: 0.5rem; background: rgba(255,255,255,0.2); color: #fff;">
+                            📍 Use My Current Location
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>🗺️ Destination</label>
+                        <input type="text" id="destination" placeholder="Type address OR click on map below" required>
+                        <div class="map-instruction">
+                            👆 You can type the destination above OR 👇 click anywhere on the map below to select
+                        </div>
+                        <div id="map"></div>
+                        <input type="hidden" id="destLat">
+                        <input type="hidden" id="destLng">
+                    </div>
+                    
+                    <button type="submit" class="btn">🚨 Enable Emergency Mode</button>
+                </form>
+            </div>
+
+            <div id="emergencyActive" class="hidden">
+                <div class="emergency-active" style="padding: 2rem; border-radius: 15px; margin-top: 2rem;">
+                    <h2>🚨 EMERGENCY MODE ACTIVE</h2>
+                    <div class="location-info" style="background: rgba(0,0,0,0.3); margin-top: 1rem;">
+                        <p><strong>Source:</strong> <span id="activeSource"></span></p>
+                        <p><strong>Destination:</strong> <span id="activeDestination"></span></p>
+                        <p><strong>Emergency ID:</strong> <span id="activeEmergencyId"></span></p>
+                    </div>
+                    <div class="camera-list">
+                        <h3>Cameras on Route</h3>
+                        <div id="camerasList"></div>
+                    </div>
+                    <button class="btn btn-danger" onclick="disableEmergency()" style="margin-top: 1rem;">
+                        ❌ Disable Emergency Mode
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3_P_9w2yAKD9y4OIJDQoP3h_oBFF47E4&libraries=places"></script>
+    <script>
+        const API_URL = '/api';
+        let currentUser = null;
+        let activeEmergencyId = null;
+        let locationUpdateInterval = null;
+        let map = null;
+        let marker = null;
+        let geocoder = null;
+
+        function showTab(tab) {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('registerSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.add('hidden');
+
+            if (tab === 'login') {
+                document.getElementById('loginSection').classList.remove('hidden');
+            } else if (tab === 'register') {
+                document.getElementById('registerSection').classList.remove('hidden');
+            } else if (tab === 'dashboard') {
+                document.getElementById('dashboardSection').classList.remove('hidden');
+                setTimeout(initMap, 500);
+            }
+        }
+
+        function showAlert(elementId, message, type) {
+            const alertEl = document.getElementById(elementId);
+            alertEl.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => alertEl.innerHTML = '', 5000);
+        }
+
+        function initMap() {
+            const mapElement = document.getElementById('map');
+            if (!mapElement || map) {
+                console.log('Map already initialized or element not found');
+                return;
+            }
+            
+            console.log('✅ Initializing Google Maps...');
+            
+            // Sangli coordinates
+            const sangli = { lat: 16.85238, lng: 74.56921 };
+            
+            // Initialize geocoder
+            geocoder = new google.maps.Geocoder();
+            
+            // Create map
+            map = new google.maps.Map(mapElement, {
+                zoom: 13,
+                center: sangli,
+                mapTypeControl: true,
+                streetViewControl: false,
+                fullscreenControl: true
+            });
+
+            console.log('✅ Map created successfully');
+
+            // Add click listener to map
+            map.addListener('click', function(event) {
+                const clickedLat = event.latLng.lat();
+                const clickedLng = event.latLng.lng();
+                
+                console.log(`📍 Map clicked at: ${clickedLat}, ${clickedLng}`);
+                
+                // Remove old marker if exists
+                if (marker) {
+                    marker.setMap(null);
+                }
+                
+                // Create new marker
+                marker = new google.maps.Marker({
+                    position: event.latLng,
+                    map: map,
+                    title: 'Selected Destination',
+                    animation: google.maps.Animation.DROP,
+                    icon: {
+                        url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                    }
+                });
+                
+                console.log('✅ Marker placed');
+                
+                // Store coordinates immediately
+                document.getElementById('destLat').value = clickedLat.toFixed(6);
+                document.getElementById('destLng').value = clickedLng.toFixed(6);
+                
+                console.log('✅ Coordinates stored:', clickedLat.toFixed(6), clickedLng.toFixed(6));
+                
+                // Reverse geocode to get address
+                geocoder.geocode({ location: event.latLng }, function(results, status) {
+                    console.log('Geocoder status:', status);
+                    
+                    if (status === 'OK') {
+                        if (results[0]) {
+                            const address = results[0].formatted_address;
+                            console.log('✅ Address found:', address);
+                            
+                            // Update destination field
+                            document.getElementById('destination').value = address;
+                            
+                            showAlert('dashboardAlert', `✅ Destination set: ${address}`, 'success');
+                        } else {
+                            console.log('No results found');
+                            document.getElementById('destination').value = `Location: ${clickedLat.toFixed(4)}, ${clickedLng.toFixed(4)}`;
+                            showAlert('dashboardAlert', '✅ Destination coordinates set', 'success');
+                        }
+                    } else {
+                        console.error('Geocoder failed:', status);
+                        // Still set coordinates even if geocoding fails
+                        document.getElementById('destination').value = `Lat: ${clickedLat.toFixed(4)}, Lng: ${clickedLng.toFixed(4)}`;
+                        showAlert('dashboardAlert', '✅ Destination coordinates set', 'success');
+                    }
+                });
+                
+                // Center and zoom to clicked location
+                map.setCenter(event.latLng);
+                map.setZoom(15);
+            });
+            
+            console.log('✅ Map click listener added');
+        }
+
+        async function login(e) {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('loginUsername').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    document.getElementById('dashUsername').textContent = currentUser.username;
+                    document.getElementById('dashVehicleType').textContent = currentUser.vehicle_type;
+                    document.getElementById('dashVehicleNumber').textContent = currentUser.vehicle_number;
+                    document.getElementById('logoutBtn').classList.remove('hidden');
+                    showTab('dashboard');
+                    showAlert('dashboardAlert', '✅ Login successful!', 'success');
+                } else {
+                    showAlert('loginAlert', result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('loginAlert', 'Network error: ' + error.message, 'error');
+            }
+        }
+
+        async function register(e) {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('regUsername').value,
+                password: document.getElementById('regPassword').value,
+                vehicle_type: document.getElementById('regVehicleType').value,
+                vehicle_number: document.getElementById('regVehicleNumber').value,
+                phone: document.getElementById('regPhone').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('registerAlert', '✅ Registration successful! Please login.', 'success');
+                    setTimeout(() => showTab('login'), 2000);
+                } else {
+                    showAlert('registerAlert', result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('registerAlert', 'Network error: ' + error.message, 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            activeEmergencyId = null;
+            if (locationUpdateInterval) clearInterval(locationUpdateInterval);
+            if (marker) marker.setMap(null);
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('emergencyForm').classList.remove('hidden');
+            document.getElementById('emergencyActive').classList.add('hidden');
+            document.getElementById('dashStatus').textContent = 'Inactive';
+            document.getElementById('statusIndicator').className = 'status-indicator status-inactive';
+            
+            // Clear form fields
+            document.getElementById('sourceLocation').value = '';
+            document.getElementById('destination').value = '';
+            document.getElementById('destLat').value = '';
+            document.getElementById('destLng').value = '';
+            
+            showTab('login');
+        }
+
+        function getCurrentLocation() {
+            console.log('📍 Getting current location...');
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        console.log(`✅ Location: ${lat}, ${lng}`);
+                        
+                        document.getElementById('sourceLocation').value = `Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                        showAlert('dashboardAlert', '✅ Current location captured!', 'success');
+                        
+                        // Center map on current location
+                        if (map) {
+                            map.setCenter({ lat, lng });
+                            map.setZoom(14);
+                        }
+                    },
+                    error => {
+                        console.error('Location error:', error);
+                        showAlert('dashboardAlert', '❌ Location access denied', 'error');
+                    }
+                );
+            } else {
+                showAlert('dashboardAlert', '❌ Geolocation not supported', 'error');
+            }
+        }
+
+        async function enableEmergency(e) {
+            e.preventDefault();
+            
+            const source = document.getElementById('sourceLocation').value;
+            const destination = document.getElementById('destination').value;
+            const destLat = document.getElementById('destLat').value;
+            const destLng = document.getElementById('destLng').value;
+            
+            console.log('🚨 Enabling emergency:', {source, destination, destLat, destLng});
+            
+            if (!source.trim()) {
+                showAlert('dashboardAlert', '⚠️ Please enter source location', 'error');
+                return;
+            }
+            
+            if (!destination.trim()) {
+                showAlert('dashboardAlert', '⚠️ Please enter destination or click on map', 'error');
+                return;
+            }
+            
+            // Get current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async position => {
+                        const currentLocation = { 
+                            lat: position.coords.latitude, 
+                            lng: position.coords.longitude 
+                        };
+                        
+                        await activateEmergency(source, destination, currentLocation, 
+                            destLat && destLng ? {lat: parseFloat(destLat), lng: parseFloat(destLng)} : null);
+                    },
+                    async error => {
+                        console.log('Location permission denied, proceeding without current location');
+                        await activateEmergency(source, destination, null, 
+                            destLat && destLng ? {lat: parseFloat(destLat), lng: parseFloat(destLng)} : null);
+                    }
+                );
+            } else {
+                await activateEmergency(source, destination, null, 
+                    destLat && destLng ? {lat: parseFloat(destLat), lng: parseFloat(destLng)} : null);
+            }
+        }
+
+        async function activateEmergency(source, destination, currentLocation, destinationCoords) {
+            const data = {
+                username: currentUser.username,
+                source: source,
+                destination: destination,
+                destination_coords: destinationCoords,
+                current_location: currentLocation
+            };
+            
+            console.log('📤 Sending to backend:', data);
+            
+            try {
+                const response = await fetch(`${API_URL}/emergency/enable`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('📥 Backend response:', result);
+                
+                if (result.success) {
+                    activeEmergencyId = result.emergency_id;
+                    
+                    // Hide form, show active emergency
+                    document.getElementById('emergencyForm').classList.add('hidden');
+                    document.getElementById('emergencyActive').classList.remove('hidden');
+                    
+                    // Update UI
+                    document.getElementById('activeSource').textContent = source;
+                    document.getElementById('activeDestination').textContent = destination;
+                    document.getElementById('activeEmergencyId').textContent = activeEmergencyId;
+                    document.getElementById('dashStatus').textContent = 'ACTIVE';
+                    document.getElementById('statusIndicator').className = 'status-indicator status-active';
+                    
+                    // Display cameras
+                    displayCameras(result.cameras_on_route || []);
+                    
+                    // Start location updates
+                    startLocationUpdates();
+                    
+                    showAlert('dashboardAlert', '✅ 🚨 EMERGENCY MODE ACTIVATED! Traffic signals are being cleared...', 'success');
+                } else {
+                    showAlert('dashboardAlert', '❌ ' + (result.message || 'Failed to activate emergency'), 'error');
+                }
+            } catch (error) {
+                console.error('❌ Emergency activation error:', error);
+                showAlert('dashboardAlert', '❌ Network error: ' + error.message, 'error');
+            }
+        }
+
+        function displayCameras(cameras) {
+            const camerasList = document.getElementById('camerasList');
+            camerasList.innerHTML = '';
+            
+            if (!cameras || cameras.length === 0) {
+                camerasList.innerHTML = '<div class="camera-item"><span>⏳ Calculating route and cameras...</span></div>';
+                return;
+            }
+            
+            cameras.forEach((camera, index) => {
+                const cameraItem = document.createElement('div');
+                cameraItem.className = 'camera-item';
+                cameraItem.innerHTML = `
+                    <div>
+                        <strong>📹 Camera ${index + 1}:</strong> ${camera.location}<br>
+                        <small>Distance: ${camera.distance_from_current?.toFixed(2) || 'N/A'} km</small>
+                    </div>
+                    <span style="color: #00ff88; font-weight: bold;">✓ CLEARING</span>
+                `;
+                camerasList.appendChild(cameraItem);
+            });
+        }
+
+        function startLocationUpdates() {
+            console.log('🔄 Starting location updates...');
+            
+            locationUpdateInterval = setInterval(async () => {
+                if (navigator.geolocation && activeEmergencyId) {
+                    navigator.geolocation.getCurrentPosition(async position => {
+                        const currentLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        console.log('📍 Updating location:', currentLocation);
+                        
+                        try {
+                            const response = await fetch(`${API_URL}/emergency/update-location`, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                    emergency_id: activeEmergencyId,
+                                    current_location: currentLocation
+                                })
+                            });
+                            
+                            const result = await response.json();
+                            if (result.success && result.cameras_on_route) {
+                                displayCameras(result.cameras_on_route);
+                            }
+                        } catch (error) {
+                            console.error('Location update error:', error);
+                        }
+                    });
+                }
+            }, 30000); // Update every 30 seconds
+        }
+
+        async function disableEmergency() {
+            if (!activeEmergencyId) return;
+            
+            console.log('🛑 Disabling emergency:', activeEmergencyId);
+            
+            try {
+                const response = await fetch(`${API_URL}/emergency/disable`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({emergency_id: activeEmergencyId})
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (locationUpdateInterval) {
+                        clearInterval(locationUpdateInterval);
+                    }
+                    
+                    activeEmergencyId = null;
+                    
+                    // Show form, hide active emergency
+                    document.getElementById('emergencyForm').classList.remove('hidden');
+                    document.getElementById('emergencyActive').classList.add('hidden');
+                    
+                    // Reset status
+                    document.getElementById('dashStatus').textContent = 'Inactive';
+                    document.getElementById('statusIndicator').className = 'status-indicator status-inactive';
+                    
+                    // Clear form
+                    document.getElementById('sourceLocation').value = '';
+                    document.getElementById('destination').value = '';
+                    document.getElementById('destLat').value = '';
+                    document.getElementById('destLng').value = '';
+                    
+                    // Remove marker
+                    if (marker) {
+                        marker.setMap(null);
+                        marker = null;
+                    }
+                    
+                    showAlert('dashboardAlert', '✅ Emergency mode disabled. Traffic restored to normal.', 'success');
+                } else {
+                    showAlert('dashboardAlert', '❌ Failed to disable emergency', 'error');
+                }
+            } catch (error) {
+                console.error('Disable error:', error);
+                showAlert('dashboardAlert', '❌ Error disabling: ' + error.message, 'error');
+            }
+        }
+
+        // Debug logging
+        window.addEventListener('load', function() {
+            console.log('✅ Page loaded successfully');
+        });
+    </script>
+</body>
+</html>

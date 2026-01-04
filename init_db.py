@@ -1,0 +1,15 @@
+from database import db
+
+print("✅ Database initialized successfully!")
+print("📊 Tables created:")
+print("   - ambulances")
+print("   - junctions")
+print("   - emergency_requests")
+print("   - emergency_junctions")
+print("   - detection_logs")
+print("\n🎯 Sample data added:")
+print("   - 5 sample junctions")
+print("   - 1 sample ambulance (AMB001)")
+print("\n🔑 Demo credentials:")
+print("   - Ambulance: AMB001 / admin123")
+print("   - Admin: admin / admin123")
