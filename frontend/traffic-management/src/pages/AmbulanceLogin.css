@@ -1,4 +1,5 @@
-/* AmbulanceLogin.css - Dark Theme */
+/* AmbulanceLogin.css - Da
+k Theme */
 
 /* Variables */
 :root {
@@ -418,4 +419,41 @@
 
 .login-page::-webkit-scrollbar-thumb:hover {
   background: var(--primary-red);
+}
+
+.registration-link {
+  text-align: center;
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.registration-link p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.register-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.register-link:hover {
+  background: rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+}
+
+.link-icon {
+  font-size: 18px;
 }

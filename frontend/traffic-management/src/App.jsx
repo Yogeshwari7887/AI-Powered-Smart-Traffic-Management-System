@@ -9,6 +9,7 @@ import AmbulanceDashboard from "./pages/AmbulanceDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AmbulanceRoute from "./components/AmbulanceRoute";
 import "./App.css";
+import AmbulanceRegistration from "./pages/AmbulanceRegistration";
 
 function App() {
   return (
@@ -38,6 +39,8 @@ function App() {
             </div>
           </div>
         } />
+
+        <Route path="/ambulance-register" element={<AmbulanceRegistration />} />
         
         {/* 🏠 HOME (ADMIN) */}
         <Route

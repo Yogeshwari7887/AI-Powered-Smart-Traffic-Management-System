@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , Link } from "react-router-dom";
 import "./AmbulanceLogin.css";
 
 function AmbulanceLogin() {
@@ -68,6 +68,14 @@ function AmbulanceLogin() {
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
+
+        <div className="registration-link">
+          <p>New ambulance service?</p>
+          <Link to="/ambulance-register" className="register-link">
+          <span className="link-icon">🚑</span>
+          Register Here
+          </Link>
+        </div>
 
         <p className="switch-login">
           <a href="/login">Admin Login</a>

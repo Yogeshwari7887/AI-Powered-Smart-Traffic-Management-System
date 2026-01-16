@@ -437,3 +437,13 @@
 .mobile-toggle.active .toggle-bar:nth-child(3) {
   transform: rotate(-45deg) translate(7px, -6px);
 }
+
+.register-link {
+  background: rgba(46, 213, 115, 0.1);
+  color: #2ed573;
+  border: 1px solid rgba(46, 213, 115, 0.2);
+}
+
+.register-link:hover {
+  background: rgba(46, 213, 115, 0.2);
+}

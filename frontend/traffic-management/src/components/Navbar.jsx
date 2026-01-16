@@ -83,7 +83,12 @@ function Navbar() {
                 <span className="nav-icon">🚑</span>
                 <span className="nav-text">Ambulance Login</span>
               </Link>
-            </>
+
+              <Link to="/ambulance-register" className="nav-link register-link">
+                <span className="nav-icon">🚑</span>
+                Register Ambulance
+                </Link>
+              </>
           )}
         </div>
 

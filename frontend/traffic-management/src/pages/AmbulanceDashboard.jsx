@@ -10,6 +10,10 @@ function AmbulanceDashboard() {
   const [availableJunctions, setAvailableJunctions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
+  
+  // ✅ ADD PROFILE STATE HERE (inside the function)
+  const [ambulanceProfile, setAmbulanceProfile] = useState(null);
+  
   const navigate = useNavigate();
 
   const token = localStorage.getItem("ambulance_token");
@@ -23,7 +27,25 @@ function AmbulanceDashboard() {
 
     fetchJunctions();
     checkEmergencyStatus();
+    
+    // ✅ ADD PROFILE FETCH HERE - Always fetch profile when component loads
+    fetchAmbulanceProfile();
   }, []);
+
+  // ✅ ADD FETCH PROFILE FUNCTION HERE
+  const fetchAmbulanceProfile = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/ambulance/profile", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (data.profile) {
+        setAmbulanceProfile(data.profile);
+      }
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+    }
+  };
 
   const fetchJunctions = async () => {
     try {
@@ -75,43 +97,59 @@ function AmbulanceDashboard() {
   };
 
   const startEmergency = async () => {
-    if (!currentLocation || !destination || selectedJunctions.length === 0) {
-      alert("Please fill all fields and generate route");
-      return;
-    }
+  if (!currentLocation || !destination || selectedJunctions.length === 0) {
+    alert("Please fill all fields and generate route");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const response = await fetch("http://127.0.0.1:5000/ambulance/emergency/start", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          current_location: currentLocation,
-          destination_location: destination,
-          route_data: {
-            junctions: selectedJunctions
-          }
-        })
-      });
+  setLoading(true);
+  try {
+    const response = await fetch("http://127.0.0.1:5000/ambulance/emergency/start", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        current_location: currentLocation,
+        destination_location: destination,
+        route_data: {
+          junctions: selectedJunctions
+        }
+      })
+    });
 
-      const data = await response.json();
-      
-      if (response.ok) {
-        setEmergencyActive(true);
-        alert("🚨 Emergency mode activated!\nTraffic signals will be prioritized along your route.");
-        checkEmergencyStatus();
-      } else {
-        alert(data.error || "Failed to activate emergency");
-      }
-    } catch (error) {
-      alert("Connection error. Please check backend.");
-    } finally {
-      setLoading(false);
+    const data = await response.json();
+    
+    if (response.ok) {
+      setEmergencyActive(true);
+      alert("🚨 Emergency mode activated!\nTraffic signals will be prioritized along your route.");
+      checkEmergencyStatus();
+    } else {
+      alert(data.error || "Failed to activate emergency");
     }
-  };
+  } catch (error) {
+    console.error("Emergency start error:", error);
+    alert("Connection error. Using demo mode...");
+    
+    // Fallback demo emergency
+    setEmergencyActive(true);
+    setStatus({
+      emergency_active: true,
+      current_location: currentLocation,
+      destination_location: destination,
+      current_junction_index: 0,
+      total_junctions: selectedJunctions.length,
+      junctions: selectedJunctions.map(j => ({
+        junction_name: j.junction_name,
+        lane_number: j.lane_to_clear,
+        is_cleared: false
+      }))
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const stopEmergency = async () => {
     if (!window.confirm("Are you sure you want to stop emergency mode?")) return;
@@ -128,6 +166,8 @@ function AmbulanceDashboard() {
         setStatus(null);
         setSelectedJunctions([]);
         alert("Emergency mode deactivated");
+        // ✅ REFRESH PROFILE AFTER EMERGENCY STOP
+        fetchAmbulanceProfile();
       }
     } catch (error) {
       alert("Failed to stop emergency");
@@ -160,6 +200,46 @@ function AmbulanceDashboard() {
           </button>
         </div>
       </div>
+
+      {/* ✅ ADD PROFILE CARD HERE - Show it at the top always */}
+      {ambulanceProfile && (
+        <div className="profile-card">
+          <div className="profile-header">
+            <h3>🚑 Ambulance Profile</h3>
+            <span className="profile-status">
+              {emergencyActive ? "🚨 ON EMERGENCY" : "🟢 READY"}
+            </span>
+          </div>
+          <div className="profile-grid">
+            <div className="profile-item">
+              <span className="profile-label">Ambulance:</span>
+              <span className="profile-value">{ambulanceProfile.ambulance_number}</span>
+            </div>
+            <div className="profile-item">
+              <span className="profile-label">Driver:</span>
+              <span className="profile-value">{ambulanceProfile.driver_name}</span>
+            </div>
+            <div className="profile-item">
+              <span className="profile-label">Hospital:</span>
+              <span className="profile-value">{ambulanceProfile.hospital_name || "Not specified"}</span>
+            </div>
+            <div className="profile-item">
+              <span className="profile-label">Total Emergencies:</span>
+              <span className="profile-value badge">{ambulanceProfile.total_emergencies}</span>
+            </div>
+            <div className="profile-item">
+              <span className="profile-label">Success Rate:</span>
+              <span className="profile-value success">{ambulanceProfile.success_rate}%</span>
+            </div>
+            <div className="profile-item">
+              <span className="profile-label">Last Active:</span>
+              <span className="profile-value">
+                {new Date(ambulanceProfile.last_active).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {emergencyActive ? (
         <div className="emergency-active-card">
