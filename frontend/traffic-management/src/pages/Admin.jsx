@@ -30,7 +30,7 @@ function Admin() {
 
   const fetchActiveEmergencies = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/emergencies/active");
+      const response = await fetch(`${API_BASE_URL}/emergencies/active`);
       const data = await response.json();
       setEmergencies(data.emergencies || []);
     } catch (error) {
@@ -40,7 +40,7 @@ function Admin() {
 
   const fetchJunctions = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/junctions");
+      const response = await fetch(`${API_BASE_URL}/junctions`);
       const data = await response.json();
       setJunctions(data.junctions || []);
     } catch (error) {
@@ -50,7 +50,7 @@ function Admin() {
 
   const fetchAllSignals = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/all-junctions-status");
+      const response = await fetch(`${API_BASE_URL}/all-junctions-status`);
       const data = await response.json();
       setSignals(data);
     } catch (error) {
@@ -62,7 +62,7 @@ function Admin() {
     if (!window.confirm("Are you sure you want to clear this emergency?")) return;
     
     try {
-      await fetch(`http://127.0.0.1:5000/emergencies/clear/${emergencyId}`, {
+      await fetch(`${API_BASE_URL}/emergencies/clear/${emergencyId}`, {
         method: "POST"
       });
       
@@ -78,7 +78,7 @@ function Admin() {
   const forceEmergency = async () => {
     setLoading(true);
     try {
-      await fetch("http://127.0.0.1:5000/admin/force-emergency", {
+      await fetch(`${API_BASE_URL}/admin/force-emergency`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -100,7 +100,7 @@ function Admin() {
 
   const updateDuration = async () => {
     try {
-      await fetch("http://127.0.0.1:5000/admin/set-duration", {
+      await fetch(`${API_BASE_URL}/admin/set-duration`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ seconds: priorityDuration })
@@ -118,7 +118,7 @@ function Admin() {
     if (!window.confirm("Reset all traffic signals to normal mode?")) return;
     
     try {
-      await fetch("http://127.0.0.1:5000/admin/reset", {
+      await fetch(`${API_BASE_URL}/admin/reset`, {
         method: "POST"
       });
 
@@ -133,7 +133,7 @@ function Admin() {
 
   const toggleSystemPriority = async () => {
     try {
-      await fetch("http://127.0.0.1:5000/admin/toggle-priority", {
+      await fetch(`${API_BASE_URL}/admin/toggle-priority`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: !systemPriority })
@@ -150,7 +150,7 @@ function Admin() {
 
   const resetJunction = async (junctionName) => {
     try {
-      await fetch(`http://127.0.0.1:5000/reset-junction/${junctionName}`, {
+      await fetch(`${API_BASE_URL}/reset-junction/${junctionName}`, {
         method: "POST"
       });
 
