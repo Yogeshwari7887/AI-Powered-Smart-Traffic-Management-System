@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "react-geocode": "^2.0.1",
     "react-router-dom": "^7.11.0"
   }
 }
