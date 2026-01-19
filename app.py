@@ -10,7 +10,7 @@ from database import db
 from ambulance_auth import ambulance_auth
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Register ambulance auth blueprint
 app.register_blueprint(ambulance_auth, url_prefix='/ambulance')
