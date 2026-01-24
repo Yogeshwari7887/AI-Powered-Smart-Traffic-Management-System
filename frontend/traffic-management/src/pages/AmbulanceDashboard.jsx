@@ -392,8 +392,19 @@ function AmbulanceDashboard() {
   };
 
   const generateRandomRoute = () => {
+    // Validate that both fields are filled
+    if (!currentLocation || currentLocation.trim() === "") {
+      alert("❌ Please set your current location first!\nClick 'Use GPS' or enter manually.");
+      return;
+    }
+
+    if (!destination || destination.trim() === "") {
+      alert("❌ Please select a destination first!\nSearch for a location or select on map.");
+      return;
+    }
+
     if (availableJunctions.length < 2) {
-      alert("Not enough junctions available");
+      alert("❌ Not enough junctions available");
       return;
     }
 
@@ -409,6 +420,7 @@ function AmbulanceDashboard() {
     }));
 
     setSelectedJunctions(formattedJunctions);
+    alert(`✅ Route generated successfully!\n${numJunctions} junctions selected for clearance.`);
   };
 
   const startEmergency = async () => {
