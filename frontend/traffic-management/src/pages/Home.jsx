@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "./Home.css";
-import API_BASE_URL from "../config/api";
 
 function TrafficLight({ color }) {
   return (
@@ -72,7 +71,7 @@ export default function Home() {
 
   const fetchJunctions = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/junctions`);
+      const response = await fetch("http://127.0.0.1:5000/junctions");
       const data = await response.json();
       setJunctions(data.junctions || []);
     } catch (error) {
@@ -82,7 +81,7 @@ export default function Home() {
 
   const fetchAllJunctionsStatus = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/all-junctions-status`);
+      const response = await fetch("http://127.0.0.1:5000/all-junctions-status");
       const data = await response.json();
       setJunctionSignals(data);
     } catch (error) {
@@ -92,7 +91,7 @@ export default function Home() {
 
   const fetchActiveEmergencies = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/emergencies/by-junction`);
+      const response = await fetch("http://127.0.0.1:5000/emergencies/by-junction");
       const data = await response.json();
       setActiveEmergencies(data.junctions_with_emergencies || []);
       
@@ -113,7 +112,7 @@ export default function Home() {
 
   const fetchScheduledEmergencyForJunction = async (junctionName) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/emergencies/junction/${junctionName}`);
+      const response = await fetch(`http://127.0.0.1:5000/emergencies/junction/${junctionName}`);
       const data = await response.json();
       
       if (data.active_emergencies.length > 0) {
@@ -147,7 +146,7 @@ export default function Home() {
     formData.append("junction", selectedJunction);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/analyze`, {
+      const res = await fetch("http://127.0.0.1:5000/analyze", {
         method: "POST",
         body: formData,
       });
@@ -495,7 +494,7 @@ export default function Home() {
                 </div>
                 <div className="video-container">
                   <video
-                    src={`${API_BASE_URL}${result.output_video}`}
+                    src={`http://127.0.0.1:5000${result.output_video}`}
                     controls
                     className="result-video"
                   />

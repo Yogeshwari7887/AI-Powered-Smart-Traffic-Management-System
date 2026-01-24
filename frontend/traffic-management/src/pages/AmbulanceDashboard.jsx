@@ -351,7 +351,7 @@ function AmbulanceDashboard() {
 
   const fetchAmbulanceProfile = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/ambulance/profile`, {
+      const response = await fetch("http://127.0.0.1:5000/ambulance/profile", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
@@ -365,7 +365,7 @@ function AmbulanceDashboard() {
 
   const fetchJunctions = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/ambulance/junctions`, {
+      const response = await fetch("http://127.0.0.1:5000/ambulance/junctions", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
@@ -377,7 +377,7 @@ function AmbulanceDashboard() {
 
   const checkEmergencyStatus = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/ambulance/emergency/status`, {
+      const response = await fetch("http://127.0.0.1:5000/ambulance/emergency/status", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
@@ -419,7 +419,7 @@ function AmbulanceDashboard() {
 
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/ambulance/emergency/start`, {
+      const response = await fetch("http://127.0.0.1:5000/ambulance/emergency/start", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -472,7 +472,7 @@ function AmbulanceDashboard() {
     
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/ambulance/emergency/stop`, {
+      const response = await fetch("http://127.0.0.1:5000/ambulance/emergency/stop", {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` }
       });
