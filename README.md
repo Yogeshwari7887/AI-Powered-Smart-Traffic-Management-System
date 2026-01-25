@@ -268,5 +268,24 @@ Result: Optimal resource allocation
 - Lower emergency vehicle maintenance costs
 - Improved overall traffic efficiency
 
+## 🎥 Demo Video
+Watch the complete working demo of the project here:  
+👉 [Click to view Demo Video](https://drive.google.com/file/d/17tZCfEvsmt7WvbhhyA2FvzD-3NlkkzSS/view?usp=sharing)
+
+---
+
+### 🖼️ Project Snapshots
+All project screenshots and output images are available here:  
+👉 [View Project Snapshots](https://drive.google.com/drive/folders/1-m96yJ-z12NF6UO8FhWQIsfnpWfszK8j?usp=sharing)
+
+---
+
+### 📂 Google Drive Folder
+This folder contains:
+- Demo video  
+- Project snapshots   
+
+🔗 Drive Link:  
+https://drive.google.com/drive/folders/1Kf5uyESvuhx_E16xpqt-eJ6XR1K7-9J7?usp=sharing
 
 ---
